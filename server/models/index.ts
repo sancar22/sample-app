@@ -1,16 +1,14 @@
-import { connect, Mongoose, ConnectOptions } from 'mongoose';
+import * as dotenv from "dotenv";
+import { Sequelize, Dialect } from "sequelize";
+dotenv.config();
 
-export const bootDB = async (
-  connectionString: string
-): Promise<Mongoose | undefined> => {
-  try {
-    const connection = await connect(connectionString, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    } as ConnectOptions);
-    console.log('Successfully connected to the database.');
-    return connection;
-  } catch (err) {
-    console.log('[Database connection error]:\n', err);
-  }
-};
+export const sequelize = new Sequelize(
+    process.env.DB_NAME ?? "my_db",
+    process.env.DB_USER ?? "my_user",
+    process.env.DB_PASSWORD ?? "",
+    {
+        host: process.env.DB_HOST ?? "localhost",
+        dialect: (process.env.DB_DIALECT as Dialect) ?? "postgres",
+        logging: true,
+    }
+);

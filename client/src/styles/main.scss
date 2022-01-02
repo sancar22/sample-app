@@ -1,0 +1,34 @@
+.main-view {
+  @extend %base-view;
+  justify-content: center;
+
+  input, button {
+    height: 50px;
+    width: 20%;
+    min-width: 300px;
+    margin-bottom: 10px;
+  }
+
+  button {
+    margin-top: 10px;
+    height: 40px;
+    width: 20%;
+    min-width: 300px;
+    align-self: center;
+    cursor:pointer;
+    border: none;
+    color: gray;
+    border-radius: 20px;
+  }
+
+  .link {
+    display: flex;
+    text-decoration: none;
+    color: gray;
+    width: 100%;
+    align-self: center;
+    justify-content: center;
+  }
+}
+
+

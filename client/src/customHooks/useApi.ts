@@ -5,10 +5,6 @@ export default function useApi <ResponseType, ErrorType> (url: string): [Respons
   const [error, setError] = useState<ErrorType | null>(null);
 
   useEffect(() => {
-    // fetch(url)
-    //   .then(res => res.json())
-    //   .then(data => setResponse(data))
-    //   .catch(err => setError(err));
     setResponse(null);
     setError(null);
     const fetchData = async () => {
