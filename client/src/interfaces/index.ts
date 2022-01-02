@@ -4,3 +4,11 @@ export interface FormData {
   username: string;
   password: string;
 }
+
+export interface ToastParams {
+  title: string;
+  body?: string;
+  image?: string;
+  textStyle?: object;
+  audioSrc?: string;
+}

@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { routes } from '../routes/index';
 import { FormData } from '../interfaces';
 import { authService } from '../services/authService';
+import { toast } from 'react-toastify';
+import CustomToast from '../components/CustomToast';
 
 const emptyForm: FormData = {
   firstName: '',
@@ -17,11 +19,8 @@ function Register () {
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const { res, error } = await authService.registerUser(formData);
-    if (!error) {
-      setFormData(emptyForm);
-      alert(res);
-    }
-    console.log(res, 'here');
+    if (!error) setFormData(emptyForm);
+    toast(<CustomToast title={res}/>);
   };
 
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,6 +30,7 @@ function Register () {
   return (
     <form className="main-view" onSubmit={handleRegister}>
       <input
+        required={true}
         name="firstName"
         type="text"
         placeholder="First Name"
@@ -38,6 +38,7 @@ function Register () {
         onChange={handleFormChange}
       />
       <input
+        required={true}
         name="surname"
         type="text"
         placeholder="Surname"
@@ -45,6 +46,7 @@ function Register () {
         onChange={handleFormChange}
       />
       <input
+        required={true}
         name="username"
         type="text"
         placeholder="Username"
@@ -52,6 +54,7 @@ function Register () {
         onChange={handleFormChange}
       />
       <input
+        required={true}
         name="password"
         type="password"
         placeholder="Password"
