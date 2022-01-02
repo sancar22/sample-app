@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { routes } from '../routes/index';
-import { FormData } from '../interfaces';
+import { FormDataRegister } from '../interfaces';
 import { authService } from '../services/authService';
 import { toast } from 'react-toastify';
 import CustomToast from '../components/CustomToast';
 
-const emptyForm: FormData = {
+const emptyForm: FormDataRegister = {
   firstName: '',
   surname: '',
   username: '',
@@ -14,7 +14,7 @@ const emptyForm: FormData = {
 };
 
 function Register () {
-  const [formData, setFormData] = useState<FormData>(emptyForm);
+  const [formData, setFormData] = useState<FormDataRegister>(emptyForm);
 
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

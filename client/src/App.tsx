@@ -1,7 +1,7 @@
-// import useLocalStorage from './customHooks/useLocalStorage';
-// import useApi from './customHooks/useApi';
+import { routes } from './routes';
 import Register from './screens/Register';
 import Login from './screens/Login';
+import ChatView from './screens/ChatView';
 import {
   BrowserRouter as Router,
   Routes,
@@ -14,27 +14,18 @@ toast.configure({
   autoClose: 8000,
   draggable: false,
 });
-// type ResponseApi = {
-//     user: string;
-//     lastName: string;
-// };
-// type ErrorApi = {
-//     error: string;
-// };
 
 function App () {
-  // const [name, setName] = useLocalStorage<string>('name', 'Santiago');
-  // const [result, error] = useApi<ResponseApi[], ErrorApi>(
-  //   'http://localhost:5000/api/user/okasdf'
-  // );
+
   return (
     <>
       <Router>
         <Routes>
-          <Route path="/" element={<Login/>}>
+          <Route path={routes.HOME} element={<Login/>}>
           </Route>
-          <Route path="/register" element={<Register/>}>
+          <Route path={routes.REGISTER} element={<Register/>}>
           </Route>
+          <Route path={routes.CHAT} element={<ChatView/>}></Route>
         </Routes>
       </Router>
     </>

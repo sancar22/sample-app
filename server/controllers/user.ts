@@ -1,23 +1,17 @@
 import { Request, Response } from "express";
+import { User } from "../models/user";
 
 const getUser = async (req: Request, res: Response) => {
   try {
-    console.log('entered')
-    res.status(200).send([{user: 'santiago', lastName: 'Vásquez'}]);
+    const user = await User.findOne({
+        where: { id: req.body.user.id },
+        attributes: { exclude: ["createdAt", "updatedAt", "password"] },
+    });
+    res.status(200).send({res: user, error: false});
   } catch (e) {
     console.log(e);
-    res.status(500).send("Internal Server Error!");
+    res.status(500).send({ res: "Internal Server Error!", error: true });
   }
 };
 
-const deleteUser = async (req: Request, res: Response) => {
-  try {
-    console.log("entered");
-    res.status(204).send(`User with id ${req.params.id} deleted!`);
-  } catch (e) {
-    console.log(e);
-    res.status(500).send("Internal Server Error!");
-  }
-};
-
-export default { getUser, deleteUser };
+export default { getUser };

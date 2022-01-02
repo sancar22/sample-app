@@ -1,8 +1,8 @@
-import { FormData } from '../interfaces';
+import { FormDataRegister, FormDataLogin } from '../interfaces';
 
 const baseURL: string | undefined = process.env.REACT_APP_API_URL;
 
-const registerUser = (userData: FormData) => {
+const registerUser = (userData: FormDataRegister) => {
   return fetch(baseURL + '/api/auth/register', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -12,8 +12,14 @@ const registerUser = (userData: FormData) => {
     .catch(err => console.log(err));
 };
 
-const loginUser = () => {
-  
+const loginUser = (userData: FormDataLogin) => {
+  return fetch(baseURL + '/api/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(userData)
+  })
+    .then(res => res.json())
+    .catch(err => console.log(err));
 };
 
 
