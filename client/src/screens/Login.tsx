@@ -20,7 +20,6 @@ function Login () {
     e.preventDefault();
     const {res, error} = await authService.loginUser(formData);
     if (!error) {
-      // Send to main page...
       localStorage.setItem('jwt', res);
       navigate(routes.CHAT);
     } else {
@@ -31,6 +30,7 @@ function Login () {
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+  
   return (
     <form className="main-view" onSubmit={handleLogin}>
       <input

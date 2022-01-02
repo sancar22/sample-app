@@ -23,10 +23,8 @@ function ChatView () {
       toast(<CustomToast title={res} />);
       navigate(routes.HOME);
     } else {
-      console.log(res);
       dispatch(setUser(res));
     }
-
   };
   
   useEffect(() => {
@@ -34,7 +32,20 @@ function ChatView () {
   }, []);
 
   return (
-    <div>Here: {user.firstName}</div>
+    <div className="container">
+      <div className="info-bar">
+        <div>Logged in as: {user.username}</div>
+        <button className='logout'>Logout</button>
+      </div>
+      <div className="messages-container">
+        <div className='left message'>Hola cami churro</div>
+        <div className='right message'>Hola santi churro</div>
+      </div>
+      <form className="input-container">
+        <textarea placeholder="Type a message" />
+        <input type="submit" value="SEND" className="send-button" />
+      </form>
+    </div>
   );
 };
 
