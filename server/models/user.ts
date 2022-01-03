@@ -6,7 +6,7 @@ import {
     Optional,
     DataTypes,
 } from "sequelize";
-import { Message } from "./Message";
+import { Message } from "./message";
 import { sequelize } from "./index";
 
 interface IUserAttributes {
@@ -27,8 +27,8 @@ export class User extends Model<IUserAttributes, IUserCreationAttributes>
     public username!: string;
     public password!: string;
 
-    public readonly created_at!: Date;
-    public readonly updated_at!: Date;
+    public readonly createdAt!: Date;
+    public readonly updatedAt!: Date;
 
     public addMessage!: HasManyAddAssociationMixin<Message, number>;
     public createMessage!: HasManyCreateAssociationMixin<Message>;
@@ -70,8 +70,11 @@ User.init(
     }
 );
 
+
 User.hasMany(Message, {
     sourceKey: "id",
     foreignKey: "ownerId",
     as: "messages",
 });
+
+Message.belongsTo(User, {foreignKey: "ownerId"});

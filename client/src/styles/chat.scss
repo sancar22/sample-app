@@ -43,6 +43,7 @@ textarea {
   color: rgb(150, 150, 150);
   padding-top: 5px;
   font-size: 0.7rem;
+  width: 100%;
 }
 
 .right .message-text {
@@ -96,6 +97,13 @@ textarea {
   div {
     font-size: 1.5em;
   }
+}
+
+.bold {
+  font-weight: bold;
+  color: black;
+  text-transform: capitalize;
+  font-size: 16px;
 }
 
 ::-webkit-scrollbar {
