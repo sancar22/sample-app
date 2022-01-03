@@ -38,3 +38,14 @@ We have leveraged Sequelize's `HasMany` and `belongsTo` in order to create a 1 t
 ## DataBase
 
 The Database utilized is not really relevant, as long as it is PostgreSQL. Jokes. As long as it is a relational database, it will work, although PostgreSQL is highly suggested simply because it is the best relational database to learn to utilize because of how common it is.
+
+## Tests
+
+The tests found under the `test/` directory, can be run using the command `npm t` or `npm test`.
+The script in `package.json` has been changed to utilize mocha, and ts-node, in order to run the tests correctly.
+
+We are using `Mocha` as the testing framework and `Chai` as the assertion library. We are primarily utilizing the assertion `should`. This is simply because it is the preferred assertion by the writers of the test. Finally, we are also utilizing `supertest` for testing HTTP.
+
+### Auth Tests
+
+The Auth tests are made for testing the authorization middleware. They will ensure routes are rejected if no JWT is provided, or if the JWT is incorrect. Additionally, they also test for the next function to be called. 
