@@ -22,6 +22,7 @@ const getAllMessages = async (_: Request, res: Response) => {
 const postMessage = async (req: Request, res: Response) => {
   try {
     const { message, user } = req.body;
+    if (message.trim().length === 0) return res.status(400).send({res: "Message should be at least 1 character long", error: true});
     const newMessage = await Message.create({
       ownerId: user.id,
       text: message,

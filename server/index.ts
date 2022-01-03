@@ -7,8 +7,12 @@ dotenv.config();
 const PORT: number = parseInt(process.env.PORT);
 
 (async () => {
-    await Message.sync();
-    await User.sync();
-    console.log("Connected to DB: ", process.env.DB_NAME);
-    bootServer(PORT);
+    try {
+        await User.sync();
+        await Message.sync();
+        console.log("Connected to DB: ", process.env.DB_NAME);
+        bootServer(PORT);
+    } catch (e) {
+        console.log(e);
+    }
 })();

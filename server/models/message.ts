@@ -33,7 +33,7 @@ Message.init(
             allowNull: false,
         },
         text: {
-            type: new DataTypes.STRING(128),
+            type: new DataTypes.STRING(1000),
             allowNull: false,
         },
     },
