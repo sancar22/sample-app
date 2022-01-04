@@ -7,30 +7,27 @@ mocks.invalidJWT = {
     value: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
 }
 
-mocks.registerUser = {
-  name: "Test Register",
-  email: "register@register.register",
-  password: 'pass',
-  password2: 'pass',
+mocks.mockUser = {
+  id: 1,
+  firstName: "Rick",
+  surname: "Sanchez",
+  username: "pickelrick",
+  password: "wubalubadubdub"
 }
 
-mocks.registerUserMismatchPass = {
-  name: "Test Register",
-  email: "register@register.register",
-  password: 'pass',
-  password2: 'ssap',
-}
+mocks.testMessages = [
+  {
+    ownerId: 1,
+    text: "Test 1"
+  },
+  {
+    ownerId: 1,
+    text: "Test 2",
+  }
+]
 
-mocks.dupeRegisterUser = {
-  name: "Steven",
-  email: "steven@steven.steven",
-  password: "wordpass",
-  password2: 'wordpass'
+mocks.testNewMessage = {
+  ownerId: 1,
+  text: "Test 3"
 }
-
-mocks.loginUser = {
-  email: "steven@steven.steven",
-  password: 'wordpass',
-}
-
 module.exports = mocks;

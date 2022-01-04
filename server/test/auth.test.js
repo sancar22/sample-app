@@ -43,7 +43,7 @@ describe('test user auth', () => {
     res.status.should.equal(401);
   })
 
-  it('should call next() if verified JWT and user', async () => {
+  it('should call callback if verified JWT and user', async () => {
     const res = await request.get('/authTestRoute')
       .set('Authorization', validTestJWT);
       res.status.should.equal(200);
