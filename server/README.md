@@ -48,4 +48,12 @@ We are using `Mocha` as the testing framework and `Chai` as the assertion librar
 
 ### Auth Tests
 
-The Auth tests are made for testing the authorization middleware. They will ensure routes are rejected if no JWT is provided, or if the JWT is incorrect. Additionally, they also test for the next function to be called. 
+The Auth tests are made for testing the authorization middleware. They will ensure routes are rejected if no JWT is provided, or if the JWT is incorrect. Additionally, they also test for the next function to be called.
+
+### HTTP Tests
+
+The HTTP tests are meant to test the entire routes. You will notice most are testing both the status codes and the return messages. We are utilizing build up and tear down hooks `before, after, beforeAll, afterAll` in order to ensure the test database is synced, and that we have the correct test data in the database. Note that when ensuring something is undefined, the previous `.should` syntax doesn't work. You need to utilize another syntax. We have chosen to do `should.equal()`. This will only work if you have required and instantiaated `chai.should()`;
+
+### MODEL Tests
+
+Finally, we have tested the models. We have added tests for both the message model and the user model. Since we are utilizing sequlize, a highly tested and trusted ORM, the testing here doesn't need to be as exhaustive. However, we have decided for peace of mind, to add tests that ensure the models have the desired attributes. We are also testing the models for the desired associations. Finally, we have tested that the models are set up correctly, by purposefully giving incorrect data and calling the `.validate()` method. *IMPORTANT* `.validate()` is an async method, so are normal strategies don't work. In order to facilitate this, we have added the npm package `chai-as-promised`. Take a look at the model tests files to see how this is set up. Essentially, though, what this does is allow to test promises. Here, we are testing that `.validate()` correctly throws an Error. 
