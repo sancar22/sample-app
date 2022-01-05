@@ -30,6 +30,7 @@ function Register () {
   return (
     <form className="main-view" onSubmit={handleRegister}>
       <input
+        role="firstname-register"
         required={true}
         name="firstName"
         type="text"
