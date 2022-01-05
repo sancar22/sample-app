@@ -13,7 +13,6 @@ const emptyForm: FormDataLogin = {
 
 function Login () {
   const [formData, setFormData] = useState<FormDataLogin>(emptyForm);
-  const [visible, setVisible] = useState(false);
   
   const navigate = useNavigate();
 
@@ -52,10 +51,9 @@ function Login () {
         value={formData.password}
         onChange={handleFormChange}
       />
-      <div role="div-test">Hello</div>
       <button role="button-login" type="submit">Login</button>
       <Link role="register-link" to={routes.REGISTER} className="link">
-        <button role="register-login" onClick={() => setVisible(true)}>Register</button>
+        <button role="register-login">Register</button>
       </Link>
     </form>
   );
