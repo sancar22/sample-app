@@ -1,8 +1,17 @@
-import { rest } from 'msw';
+import { DefaultRequestBody, ResponseComposition, rest, RestContext } from 'msw';
 
 import {FormDataRegister} from '../interfaces';
 
 const base_api_url = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
+const isNotAuthenticated = (res: ResponseComposition<DefaultRequestBody>, ctx: RestContext) => {
+  return res(
+    ctx.status(403),
+    ctx.json({
+      errorMessage: 'Not authorized',
+    })
+  );
+}
 
 export const routes = [
 
@@ -12,10 +21,10 @@ export const routes = [
   /*
   ---------------- START AUTH ROUTES -------------------------
   */
- rest.post(base_api_url + '/api/auth/login', (req, res, ctx) => {
-  sessionStorage.setItem('accessToken', 'success');
-  return res(ctx.status(200), ctx.json({ res: 'success' }));
- }),
+  rest.post(base_api_url + '/api/auth/login', (req, res, ctx) => {
+    sessionStorage.setItem('accessToken', 'success');
+    return res(ctx.status(200), ctx.json({ res: 'success' }));
+  }),
   rest.post<FormDataRegister>(base_api_url + '/api/auth/register', (req, res, ctx) => {
     const { firstName, surname, username, password } = req.body;
     if (!firstName || !surname || !username || !password) {
@@ -31,7 +40,17 @@ export const routes = [
   /*
   ---------------- START USER ROUTES -------------------------
   */
-  rest.get(base_api_url + '/api/user/getInfo', (req, res, ctx) => {}),
+  rest.get(base_api_url + '/api/user/getInfo', (req, res, ctx) => {
+    const isAuthenticated = !!sessionStorage.getItem('accessToken');
+    if (isAuthenticated) {
+      return res(
+        ctx.status(200),
+        ctx.json({res: {id: 1, firstName: "Rick", surname: "Sanchez", username: "pickelrick", messages: []}, error: false})
+      )
+    } else {
+      return isNotAuthenticated(res, ctx);
+    }
+  }),
   /*
   ---------------- END USER ROUTES -------------------------
   */
@@ -45,5 +64,4 @@ export const routes = [
   /*
   ---------------- END MESSAGE ROUTES -------------------------
   */
- 
 ];
