@@ -1,12 +1,10 @@
 import { fireEvent, render, RenderResult, screen, waitFor} from '@testing-library/react';
 import {Router, Routes, Route} from 'react-router-dom';
 import Login from '../screens/Login';
-import Register from '../screens/Register';
 import { routes } from '../routes';
 import { BrowserHistory, createBrowserHistory } from 'history';
 import userEvent from '@testing-library/user-event';
 import { testUser } from '../mocks/routes';
-import ChatView from '../screens/ChatView';
 
 describe('tests for the login screen', () => {
   let component: RenderResult;
@@ -25,10 +23,6 @@ describe('tests for the login screen', () => {
         <Routes>
           <Route path={routes.HOME} element={<Login />}>
           </Route>
-          <Route path={routes.REGISTER} element={<Register />}>
-          </Route>
-          <Route path={routes.CHAT} element={<ChatView />}>
-          </Route>
         </Routes>
       </Router>
     );
@@ -41,7 +35,7 @@ describe('tests for the login screen', () => {
   });
 
   afterEach(() => {
-    history.push('/');
+    history.push(routes.HOME);
     localStorage.clear();
     component.unmount();
   });

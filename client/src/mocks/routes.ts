@@ -53,9 +53,14 @@ export const routes = [
     const { firstName, surname, username, password } = req.body;
     if (!firstName || !surname || !username || !password) {
       return res(ctx.status(400), ctx.json({res: 'Missing fields!', error: true}));
-    } else {
-      return res(ctx.status(201), ctx.json({res: 'User registered successfully!', error: false}));
     }
+    if (password.length < 6) {
+      return res(ctx.status(400), ctx.json({res: 'Password must be at least 6 characters long!', error: true}));
+    }
+    if (username === testUser.username) {
+      return res(ctx.status(400), ctx.json({res: 'Username already taken!', error: true}));
+    } 
+    return res(ctx.status(201), ctx.json({res: 'User registered successfully!', error: false}));
   }),
   /*
   ---------------- END AUTH ROUTES -------------------------

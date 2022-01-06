@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { routes } from '../routes/index';
 import { FormDataRegister } from '../interfaces';
 import { authService } from '../services/authService';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import CustomToast from '../components/CustomToast';
 
 const emptyForm: FormDataRegister = {
@@ -28,45 +28,51 @@ function Register () {
   };
 
   return (
-    <form className="main-view" onSubmit={handleRegister}>
-      <input
-        role="firstname-register"
-        required={true}
-        name="firstName"
-        type="text"
-        placeholder="First Name"
-        value={formData.firstName}
-        onChange={handleFormChange}
-      />
-      <input
-        required={true}
-        name="surname"
-        type="text"
-        placeholder="Surname"
-        value={formData.surname}
-        onChange={handleFormChange}
-      />
-      <input
-        required={true}
-        name="username"
-        type="text"
-        placeholder="Username"
-        value={formData.username}
-        onChange={handleFormChange}
-      />
-      <input
-        required={true}
-        name="password"
-        type="password"
-        placeholder="Password"
-        value={formData.password}
-        onChange={handleFormChange}
-      />
-      <button type="submit">Register</button>
-      <Link to={routes.HOME} className="link">
-        <button> Go Back</button>
-      </Link>
-    </form>
+    <>
+      <ToastContainer/>
+      <form role="register-form" className="main-view" onSubmit={handleRegister}>
+        <input
+          role="firstName-register"
+          required={true}
+          name="firstName"
+          type="text"
+          placeholder="First Name"
+          value={formData.firstName}
+          onChange={handleFormChange}
+        />
+        <input
+          role="surname-register"
+          required={true}
+          name="surname"
+          type="text"
+          placeholder="Surname"
+          value={formData.surname}
+          onChange={handleFormChange}
+        />
+        <input
+          role="username-register"
+          required={true}
+          name="username"
+          type="text"
+          placeholder="Username"
+          value={formData.username}
+          onChange={handleFormChange}
+        />
+        <input
+          role="password-register"
+          required={true}
+          name="password"
+          type="password"
+          placeholder="Password"
+          value={formData.password}
+          onChange={handleFormChange}
+        />
+        <button role="button-register" type="submit">Register</button>
+        <Link role="login-link" to={routes.HOME} className="link">
+          <button role="go-back"> Go Back</button>
+        </Link>
+      </form>
+    </>
   );
 }
 
