@@ -24,7 +24,7 @@ function CustomToast ({ title, body, image, textStyle, audioSrc }: ToastParams) 
 
       <img height={50} width={70} src={image || CW} alt="" />
       <div style={{ textAlign: 'center', marginLeft: '10px' }}>
-        <h4 style={{ color: 'red', ...textStyle }}>{title}</h4>
+        <h4 role="toast-notification" style={{ color: 'red', ...textStyle }}>{title}</h4>
         <p style={{ color: 'black', ...textStyle }}>{body}</p>
       </div>
     </div>

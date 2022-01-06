@@ -1,18 +1,12 @@
-import { fireEvent,  getByText,  render, RenderResult, screen, waitFor} from '@testing-library/react';
+import { fireEvent, render, RenderResult, screen, waitFor} from '@testing-library/react';
 import {Router, Routes, Route} from 'react-router-dom';
 import Login from '../screens/Login';
 import Register from '../screens/Register';
 import { routes } from '../routes';
 import { BrowserHistory, createBrowserHistory } from 'history';
 import userEvent from '@testing-library/user-event';
-import { rest } from 'msw';
-import { setupServer } from 'msw/node';
-
-const jwtToken = 'randomstring';
-
-const server = setupServer(rest.post('http://localhost:5000/api/auth/login', (req, res, ctx) => {
-  return res(ctx.json({error: false, res: jwtToken}));
-}));
+import { testUser } from '../mocks/routes';
+import ChatView from '../screens/ChatView';
 
 describe('tests for the login screen', () => {
   let component: RenderResult;
@@ -23,9 +17,6 @@ describe('tests for the login screen', () => {
   let linkButton: HTMLElement;
   let registerButton: HTMLElement;
   let history: BrowserHistory;
-
-  beforeAll(() => server.listen());
-  afterAll(() => server.close());
   
   beforeEach(() => {
     history = createBrowserHistory();
@@ -35,6 +26,8 @@ describe('tests for the login screen', () => {
           <Route path={routes.HOME} element={<Login />}>
           </Route>
           <Route path={routes.REGISTER} element={<Register />}>
+          </Route>
+          <Route path={routes.CHAT} element={<ChatView />}>
           </Route>
         </Routes>
       </Router>
@@ -48,7 +41,8 @@ describe('tests for the login screen', () => {
   });
 
   afterEach(() => {
-    server.resetHandlers();
+    history.push('/');
+    localStorage.clear();
     component.unmount();
   });
 
@@ -64,12 +58,32 @@ describe('tests for the login screen', () => {
   test('form elements should have expected names and types', () => {
     expect(usernameInput).toHaveAttribute('placeholder', expect.stringMatching(/username/i));
     expect(usernameInput).toHaveAttribute('type', 'text');
+    expect(usernameInput).toHaveAttribute('required');
     expect(passwordInput).toHaveAttribute('placeholder', expect.stringMatching(/password/i));
     expect(passwordInput).toHaveAttribute('type', 'password');
+    expect(passwordInput).toHaveAttribute('required');
     expect(loginButton).toHaveTextContent(/login/i);
     expect(loginButton).toHaveAttribute('type', 'submit');
     expect(registerButton).toHaveTextContent(/register/i);
     
+  });
+
+  test('login logic should work as expected', async () => {
+    userEvent.click(loginButton);
+    await waitFor(() => expect(screen.getByText(/Missing fields!/i)).toBeInTheDocument());
+    fireEvent.change(usernameInput, {target: {value: 'wrong_user'}});
+    fireEvent.change(passwordInput, {target: {value: testUser.password}});
+    userEvent.click(loginButton);
+    await waitFor(() => expect(screen.getByText(/Invalid username or password!/i)).toBeInTheDocument());
+    fireEvent.change(usernameInput, {target: {value: testUser.username}});
+    fireEvent.change(passwordInput, {target: {value: 'wrong_pass'}});
+    userEvent.click(loginButton);
+    await waitFor(() => expect(screen.getByText(/Invalid username or password!/i)).toBeInTheDocument());
+    fireEvent.change(usernameInput, {target: {value: testUser.username}});
+    fireEvent.change(passwordInput, {target: {value: testUser.password}});
+    userEvent.click(loginButton);
+    await waitFor(() => expect(localStorage.getItem('jwt')).toBe(testUser.jwtToken));
+    expect(history.location.pathname).toBe(routes.CHAT);
   });
 
   test('register button should redirect to register page', async () => {

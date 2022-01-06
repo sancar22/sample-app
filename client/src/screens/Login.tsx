@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { routes } from '../routes/index';
 import { FormDataLogin } from '../interfaces';
 import { authService } from '../services/authService';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import CustomToast from '../components/CustomToast';
 
 const emptyForm: FormDataLogin = {
@@ -32,30 +32,33 @@ function Login () {
   };
   
   return (
-    <form role="login-form" className="main-view" onSubmit={handleLogin}>
-      <input
-        role="username-login"
-        required={true}
-        name="username"
-        type="text"
-        placeholder="Username"
-        value={formData.username}
-        onChange={handleFormChange}
-      />
-      <input
-        role="password-login"
-        required={true}
-        name="password"
-        type="password"
-        placeholder="Password"
-        value={formData.password}
-        onChange={handleFormChange}
-      />
-      <button role="button-login" type="submit">Login</button>
-      <Link role="register-link" to={routes.REGISTER} className="link">
-        <button role="register-login">Register</button>
-      </Link>
-    </form>
+    <>
+      <ToastContainer />
+      <form role="login-form" className="main-view" onSubmit={handleLogin}>
+        <input
+          role="username-login"
+          required={true}
+          name="username"
+          type="text"
+          placeholder="Username"
+          value={formData.username}
+          onChange={handleFormChange}
+        />
+        <input
+          role="password-login"
+          required={true}
+          name="password"
+          type="password"
+          placeholder="Password"
+          value={formData.password}
+          onChange={handleFormChange}
+        />
+        <button role="button-login" type="submit">Login</button>
+        <Link role="register-link" to={routes.REGISTER} className="link">
+          <button role="register-login">Register</button>
+        </Link>
+      </form>
+    </>
   );
 }
 

@@ -1,15 +1,17 @@
 import { DefaultRequestBody, ResponseComposition, rest, RestContext } from 'msw';
 
-import {FormDataRegister, IUser} from '../interfaces';
+import {FormDataRegister, IUser, FormDataLogin} from '../interfaces';
 
 const base_api_url = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
-const testUser = {
+export const testUser = {
   id: 1,
-  firstName: "Rick",
-  surname: "Sanchez",
-  username: "pickelrick"
-}
+  firstName: 'Rick',
+  surname: 'Sanchez',
+  username: 'pickelrick',
+  password: 'strongpassword',
+  jwtToken: 'randomToken'
+};
 
 interface PostMessageRequest {
   user: IUser;
@@ -24,7 +26,7 @@ const isNotAuthenticated = (res: ResponseComposition<DefaultRequestBody>, ctx: R
       errorMessage: 'Not authorized',
     })
   );
-}
+};
 
 export const routes = [
 
@@ -34,16 +36,25 @@ export const routes = [
   /*
   ---------------- START AUTH ROUTES -------------------------
   */
-  rest.post(base_api_url + '/api/auth/login', (req, res, ctx) => {
-    sessionStorage.setItem('accessToken', 'success');
-    return res(ctx.status(200), ctx.json({ res: 'success' }));
+  rest.post<FormDataLogin>(base_api_url + '/api/auth/login', (req, res, ctx) => {
+    const { username, password } = req.body;
+    if (!username || !password)
+      return res(ctx.status(400), ctx.json({res: 'Missing fields!', error: true}));
+    if (username !== testUser.username || password !== testUser.password) {
+      return res(ctx.status(401), ctx.json({res: 'Invalid username or password!', error: true}));
+    }
+    if (username === testUser.username && password === testUser.password) {
+      return res(ctx.status(200), ctx.json({ res: testUser.jwtToken, error: false}));
+    } else {
+      return res(ctx.status(200), ctx.json({ res: 'fail', error: true}));
+    }
   }),
   rest.post<FormDataRegister>(base_api_url + '/api/auth/register', (req, res, ctx) => {
     const { firstName, surname, username, password } = req.body;
     if (!firstName || !surname || !username || !password) {
-      return res(ctx.status(400), ctx.json({res: 'Missing fields!', error: true}))
+      return res(ctx.status(400), ctx.json({res: 'Missing fields!', error: true}));
     } else {
-      return res(ctx.status(201), ctx.json({res: 'User registered successfully!', error: false}))
+      return res(ctx.status(201), ctx.json({res: 'User registered successfully!', error: false}));
     }
   }),
   /*
@@ -58,8 +69,8 @@ export const routes = [
     if (isAuthenticated) {
       return res(
         ctx.status(200),
-        ctx.json({res: {id: 1, firstName: "Rick", surname: "Sanchez", username: "pickelrick", messages: []}, error: false})
-      )
+        ctx.json({res: {id: 1, firstName: 'Rick', surname: 'Sanchez', username: 'pickelrick', messages: []}, error: false})
+      );
     } else {
       return isNotAuthenticated(res, ctx);
     }
@@ -73,30 +84,30 @@ export const routes = [
   ---------------- START MESSAGE ROUTES -------------------------
   */
   rest.get(base_api_url + '/api/message/getAll', (req, res, ctx) => {
-    const isAuthenticated = !!sessionStorage.getItem('accessToken')
+    const isAuthenticated = !!sessionStorage.getItem('accessToken');
     if (isAuthenticated) {
       return res(
         ctx.status(200),
         ctx.json({
           res: [
-            { id: 1, ownerId: 1, text: "Test 1", user: testUser },
-            { id: 2, ownerId: 1, text: "Test 2", user: testUser }
+            { id: 1, ownerId: 1, text: 'Test 1', user: testUser },
+            { id: 2, ownerId: 1, text: 'Test 2', user: testUser }
           ],
           error: false
         })
-      )
+      );
     } else {
       return isNotAuthenticated(res, ctx);
     }
   }),
 
   rest.post<PostMessageRequest>(base_api_url + '/api/message', (req, res, ctx) => {
-    const isAuthenticated = !!sessionStorage.getItem('accessToken')
+    const isAuthenticated = !!sessionStorage.getItem('accessToken');
     if (isAuthenticated) {
       try {
         const {message, user} = req.body;
         if (message.trim().length === 0) {
-          return res(ctx.status(400), ctx.json({res: "Message should be at least 1 character long", error: true}))
+          return res(ctx.status(400), ctx.json({res: 'Message should be at least 1 character long', error: true}));
         } else {
           return res(
             ctx.status(201),
@@ -107,16 +118,16 @@ export const routes = [
               },
               error: false
             })
-          )
+          );
         }
-      } catch(e){
+      } catch (e) {
         return res(
           ctx.status(500),
           ctx.json({
-            res: "Internal Server Error!",
+            res: 'Internal Server Error!',
             error: true
           })
-        )
+        );
       }
     } else {
       return isNotAuthenticated(res, ctx);
