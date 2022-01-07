@@ -5,7 +5,7 @@ import { routes } from '../routes';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../redux/store';
 import { setUser } from '../redux/slices/user';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import CustomToast from '../components/CustomToast';
 import { IUser, IMessage } from '../interfaces';
 import Message from '../components/Message';
@@ -73,7 +73,9 @@ function ChatView () {
   });
 
   const scrollToLastMessage = () => {
-    messageRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (messageRef.current?.scrollIntoView) {
+      messageRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   const keyListener = (event: KeyboardEvent) => {
@@ -103,24 +105,28 @@ function ChatView () {
   }, []);
 
   return (
-    <div className="container">
-      <div className="info-bar">
-        <div>Logged in as: {user.username}</div>
-        <button className="logout" onClick={handleLogout}>Logout</button>
+    <>
+      <ToastContainer/>
+      <div className="container">
+        <div className="info-bar">
+          <div>Logged in as: {user.username}</div>
+          <button role="logout-button" className="logout" onClick={handleLogout}>Logout</button>
+        </div>
+        <div className="messages-container">
+          {chatMessages}
+          <div ref={messageRef} ></div>
+        </div>
+        <form className="input-container" onSubmit={handleMessage}>
+          <textarea
+            role="message-input"
+            placeholder="Type a message"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+          />
+          <input role="message-submit" disabled={message.trim().length === 0} ref={submitRef} type="submit" value="SEND" className="send-button" />
+        </form>
       </div>
-      <div className="messages-container">
-        {chatMessages}
-        <div ref={messageRef} ></div>
-      </div>
-      <form className="input-container" onSubmit={handleMessage}>
-        <textarea
-          placeholder="Type a message"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-        />
-        <input disabled={message.trim().length === 0} ref={submitRef} type="submit" value="SEND" className="send-button" />
-      </form>
-    </div>
+    </>
   );
 }
 

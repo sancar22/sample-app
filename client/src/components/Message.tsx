@@ -3,7 +3,7 @@ import { MessageProps } from '../interfaces';
 
 function Message ({ isUser, content, date, fullName, username}: MessageProps) {
   return (
-    <div className={isUser ? 'right message' : 'left message'}>
+    <div role="message-bubble" className={isUser ? 'right message' : 'left message'}>
       <div className="message-time bold">
         {!isUser && fullName + ' - ' + username}
       </div>
