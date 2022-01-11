@@ -109,7 +109,7 @@ function ChatView () {
       <ToastContainer/>
       <div className="container">
         <div className="info-bar">
-          <div>Logged in as: {user.username}</div>
+          <div role="username-div">Logged in as: {user.username}</div>
           <button role="logout-button" className="logout" onClick={handleLogout}>Logout</button>
         </div>
         <div className="messages-container">
