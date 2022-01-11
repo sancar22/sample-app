@@ -1,15 +1,30 @@
 /// <reference types='cypress' />
 
-const { User } = require("../../server/models/user.ts");
+import moment from "moment";
+
+const testUser = {
+    firstName: "Santiago",
+    surname: "Vásquez",
+    username: "testUser",
+    password: "verysecurepassword",
+};
+const { firstName, surname, username, password } = testUser;
+
+let dbUser;
 
 describe("full stack tests", () => {
-    // before(() => {
-    //     User.destroy({ where: { username: "sancar22" } });
-    // });
+    before(() => {
+        // Check support/commands
+        cy.clearLocalStorageSnapshot();
+        cy.clearTestMessages("http://localhost:5000/api/message/testMessages");
+        cy.clearTestUser("http://localhost:5000/api/user/testUser");
+    });
 
-    // after(() => {
-    //     User.destroy({ where: { username: "sancar22" } });
-    // });
+    after(() => {
+        cy.clearLocalStorageSnapshot();
+        cy.clearTestMessages("http://localhost:5000/api/message/testMessages");
+        cy.clearTestUser("http://localhost:5000/api/user/testUser");
+    });
 
     it("should visit the login page", () => {
         cy.visit("/");
@@ -25,63 +40,12 @@ describe("full stack tests", () => {
         cy.get("[role=register-form]")
             .children()
             .should("have.length", 6);
-        cy.get("[role=firstName-register]")
-            .should("be.visible")
-            .should("have.attr", "placeholder")
-            .should("match", /First Name/i);
-        cy.get("[role=firstName-register]")
-            .should("have.attr", "name")
-            .should("eql", "firstName");
-        cy.get("[role=firstName-register]")
-            .should("have.attr", "type")
-            .should("eql", "text");
-        cy.get("[role=firstName-register]").should("have.attr", "required");
-
-        cy.get("[role=surname-register]")
-            .should("be.visible")
-            .should("have.attr", "placeholder")
-            .should("match", /surname/i);
-        cy.get("[role=surname-register]")
-            .should("have.attr", "name")
-            .should("eql", "surname");
-        cy.get("[role=surname-register]")
-            .should("have.attr", "type")
-            .should("eql", "text");
-        cy.get("[role=surname-register]").should("have.attr", "required");
-
-        cy.get("[role=username-register]")
-            .should("be.visible")
-            .should("have.attr", "placeholder")
-            .should("match", /username/i);
-        cy.get("[role=username-register]")
-            .should("have.attr", "name")
-            .should("eql", "username");
-        cy.get("[role=username-register]")
-            .should("have.attr", "type")
-            .should("eql", "text");
-        cy.get("[role=username-register]").should("have.attr", "required");
-
-        cy.get("[role=password-register]")
-            .should("be.visible")
-            .should("have.attr", "placeholder")
-            .should("match", /password/i);
-        cy.get("[role=password-register]")
-            .should("have.attr", "name")
-            .should("eql", "password");
-        cy.get("[role=password-register]")
-            .should("have.attr", "type")
-            .should("eql", "password");
-        cy.get("[role=password-register]").should("have.attr", "required");
-
-        cy.get("[role=button-register]")
-            .should("be.visible")
-            .should("have.attr", "type")
-            .should("eql", "submit");
-
-        cy.get("[role=login-link]")
-            .should("be.visible")
-            .should("have.attr", "href")
-            .should("eql", "/");
+        cy.checkInput("firstName-register", "text", "firstName", /First Name/i);
+        cy.checkInput("surname-register", "text", "surname", /surname/i);
+        cy.checkInput("username-register", "text", "username", /username/i);
+        cy.checkInput("password-register", "password", "password", /password/i);
+        cy.checkFormButton("button-register");
+        cy.checkLinkButton("login-link", "/");
     });
 
     it("should register user properly", () => {
@@ -89,66 +53,49 @@ describe("full stack tests", () => {
             "registerUser"
         );
         // Testing bad request
-        cy.request({
-            method: "POST",
-            url: "http://localhost:5000/api/auth/register",
-            failOnStatusCode: false,
-            body: {
-                firstName: "",
-                surname: "",
-                username: "",
-                password: "",
-            },
-        }).then((response) => {
-            expect(response.body.res).to.eq("Missing fields!");
-            expect(response.status).to.eq(400);
+        cy.missingFieldsRegister().then((response) => {
+            expect(response.body.res).to.equal("Missing fields!");
+            expect(response.status).to.equal(400);
         });
-
-        cy.get("[role=firstName-register]")
-            .type("Santiago")
-            .should("have.value", "Santiago");
-        cy.get("[role=surname-register]")
-            .type("Vásquez")
-            .should("have.value", "Vásquez");
-        cy.get("[role=username-register]")
-            .type("sancar22")
-            .should("have.value", "sancar22");
-        cy.get("[role=password-register]")
-            .type("securepassword")
-            .should("have.value", "securepassword");
-
+        cy.typeRegisterForm(firstName, surname, username, "short");
         cy.get("[role=button-register]").click();
         cy.wait("@registerUser").then(({ response }) => {
-            console.log(response);
+            expect(response.body.res).to.equal(
+                "Password must be at least 6 characters long!"
+            );
+            expect(response.statusCode).to.equal(400);
+            cy.contains("Password must be at least 6 characters long!").should(
+                "exist"
+            );
         });
+        cy.typeRegisterForm(firstName, surname, username, password);
+        cy.get("[role=button-register]").click();
+        cy.wait("@registerUser").then(({ response }) => {
+            expect(response.body.res).to.equal("User registered successfully!");
+            expect(response.statusCode).to.equal(201);
+            cy.contains("User registered successfully!").should("exist");
+        });
+        cy.checkRegisterFormEmpty();
+        cy.typeRegisterForm(firstName, surname, username, password);
+        cy.get("[role=button-register]").click();
+        cy.wait("@registerUser").then(({ response }) => {
+            expect(response.body.res).to.equal("Username already taken!");
+            expect(response.statusCode).to.equal(409);
+            cy.contains("Username already taken!").should("exist");
+        });
+    });
+
+    it("should go back to login window when clicking the go back button", () => {
+        cy.get("[role=login-link]").click();
+        cy.get("[role=login-form]").should("exist");
     });
 
     it("inputs should have expected names and types on login window", () => {
         cy.get("[role=login-form]")
             .children()
             .should("have.length", 4);
-        cy.get("[role=username-login]")
-            .should("be.visible")
-            .should("have.attr", "placeholder")
-            .should("match", /username/i);
-        cy.get("[role=username-login]")
-            .should("have.attr", "name")
-            .should("eql", "username");
-        cy.get("[role=username-login]")
-            .should("have.attr", "type")
-            .should("eql", "text");
-        cy.get("[role=username-login]").should("have.attr", "required");
-        cy.get("[role=password-login]")
-            .should("be.visible")
-            .should("have.attr", "placeholder")
-            .should("match", /password/i);
-        cy.get("[role=password-login]")
-            .should("have.attr", "name")
-            .should("eql", "password");
-        cy.get("[role=password-login]")
-            .should("have.attr", "type")
-            .should("eql", "password");
-        cy.get("[role=password-login]").should("have.attr", "required");
+        cy.checkInput("username-login", "text", "username", /username/i);
+        cy.checkInput("password-login", "password", "password", /password/i);
     });
 
     it("should login correctly", () => {
@@ -161,27 +108,90 @@ describe("full stack tests", () => {
         cy.intercept("GET", "http://localhost:5000/api/message/getAll").as(
             "messages"
         );
-        cy.get("[role=username-login]")
-            .type("camixLeon")
-            .should("have.value", "camixLeon");
-        cy.get("[role=password-login]")
-            .type("helloworld")
-            .should("have.value", "helloworld");
+        cy.typeLoginForm(username, "wrongpass");
         cy.get("[role=button-login]").click();
-        // await cause down will execute...?
         cy.wait("@loginUser").then(({ response }) => {
-            expect(response.statusCode).to.eq(200);
-            expect(localStorage.getItem("jwt")).to.eq(response.body.res);
+            expect(response.body.res).to.equal("Invalid username or password!");
+            expect(response.statusCode).to.equal(401);
+            cy.contains("Invalid username or password!").should("exist");
         });
+        cy.typeLoginForm("wronguser", password);
+        cy.get("[role=button-login]").click();
+        cy.wait("@loginUser").then(({ response }) => {
+            expect(response.body.res).to.equal("Invalid username or password!");
+            expect(response.statusCode).to.equal(401);
+            cy.contains("Invalid username or password!").should("exist");
+        });
+        cy.typeLoginForm(username, password);
+        cy.get("[role=button-login]").click();
+        cy.wait("@loginUser").then(({ response }) => {
+            expect(response.statusCode).to.equal(200);
+            expect(localStorage.getItem("jwt")).to.equal(response.body.res);
+            cy.saveLocalStorage();
+        });
+
         cy.wait("@userInfo").then(({ response }) => {
+            dbUser = response.body.res;
+            expect(dbUser.firstName).to.equal(firstName);
+            expect(dbUser.surname).to.equal(surname);
+            expect(dbUser.username).to.equal(username);
             expect(response.statusCode).to.be.oneOf([200, 304]);
             cy.get("[role=username-div]").should(
                 "contain",
-                "Logged in as: camixLeon"
+                `Logged in as: ${username}`
             );
         });
         cy.wait("@messages").then(({ response }) => {
             expect(response.statusCode).to.be.oneOf([200, 304]);
         });
+    });
+
+    it("should send messages correctly", () => {
+        cy.restoreLocalStorage();
+        cy.intercept("POST", "http://localhost:5000/api/message/").as(
+            "postMessage"
+        );
+        cy.get("[role=message-submit]").should("have.attr", "disabled");
+        cy.typeMessage("Hello world!");
+        cy.get("[role=message-submit]").should("not.have.attr", "disabled");
+        cy.get("[role=message-submit]").click();
+        cy.wait("@postMessage").then(({ response }) => {
+            const { ownerId, text, createdAt } = response.body.res;
+            expect(ownerId).to.equal(dbUser.id);
+            expect(text).to.equal("Hello world!");
+            cy.contains(
+                moment(createdAt).format("MMMM Do YYYY, h:mm:ss a")
+            ).should("exist");
+            cy.contains("Hello world!").should("exist");
+            cy.get(".right").should("have.length", 1);
+            expect(response.statusCode).to.equal(201);
+        });
+        cy.get("[role=message-submit]").should("have.attr", "disabled");
+        cy.get("[role=message-input]").type("Hello world again!{enter}");
+        cy.wait("@postMessage").then(({ response }) => {
+            const { ownerId, text, createdAt } = response.body.res;
+            expect(ownerId).to.equal(dbUser.id);
+            expect(text).to.equal("Hello world again!");
+            cy.contains(
+                moment(createdAt).format("MMMM Do YYYY, h:mm:ss a")
+            ).should("exist");
+            cy.contains("Hello world again!").should("exist");
+            cy.get(".right").should("have.length", 2);
+            expect(response.statusCode).to.equal(201);
+        });
+        cy.get("[role=message-submit]").should("have.attr", "disabled");
+    });
+
+    it("should logout correctly", () => {
+        cy.restoreLocalStorage();
+        cy.get("[role=logout-button]").should("contain", "Logout");
+        cy.getLocalStorage("jwt").then((res) => {
+            expect(res).to.exist;
+        });
+        cy.get("[role=logout-button]").click();
+        cy.getLocalStorage("jwt").then((res) => {
+            expect(res).to.be.null;
+        });
+        cy.get("[role=login-form]").should("exist");
     });
 });

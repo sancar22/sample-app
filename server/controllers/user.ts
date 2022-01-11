@@ -14,4 +14,18 @@ const getUser = async (req: Request, res: Response) => {
   }
 };
 
-export default { getUser };
+const deleteTestUser = async (req: Request, res: Response) => {
+  console.log('here')
+  try {
+    await User.destroy({
+        where: { username: 'testUser' }
+    });
+    res.status(200).send({res: 'Test user deleted!', error: false});
+  } catch (e) {
+    console.log(e);
+    res.status(500).send({ res: "Internal Server Error!", error: true });
+  }
+};
+
+
+export default { getUser, deleteTestUser };

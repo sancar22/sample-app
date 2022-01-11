@@ -34,4 +34,16 @@ const postMessage = async (req: Request, res: Response) => {
   }
 };
 
-export default { getAllMessages, postMessage };
+const deleteTestMessages = async (req: Request, res: Response) => {
+  try {
+    const user = await User.findOne({where: {username: 'testUser'}})
+    Message.destroy({where: {ownerId: user.id} });
+    return res.status(200).send({ res: "Test messages deleted!", error: false });
+  } catch (e) {
+    console.log(e);
+    res.status(500).send({ res: "Internal Server Error!", error: true });
+  }
+};
+
+
+export default { getAllMessages, postMessage, deleteTestMessages };

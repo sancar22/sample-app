@@ -6,5 +6,6 @@ const router = Router();
 
 router.get("/getAll", authMiddleware, messageController.getAllMessages);
 router.post("/", authMiddleware, messageController.postMessage);
+router.delete("/testMessages", messageController.deleteTestMessages)
 
 export default router;
